@@ -25,6 +25,10 @@ public class ProfileService {
         this.UtenteDAO = new UtenteDAO(dataSource);
     }
     
+    public ProfileService(UtenteDAO utenteDAO) {
+        this.UtenteDAO = utenteDAO;
+    }
+    
     public UtenteBean ProfileUpdate(String username, String email, String password, String biografia, byte[] icon) {
     	
     	UtenteBean u= UtenteDAO.findByUsername(username);

@@ -30,6 +30,10 @@ public class ValutazioneDAO {
     public ValutazioneDAO(DataSource testDataSource) {
     	dataSource= testDataSource;
 	}
+    
+    protected ValutazioneDAO(boolean testMode) {
+    	
+    }
 
 	public void save(ValutazioneBean valutazione) {
         String selectQuery = "SELECT * FROM Valutazione WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";

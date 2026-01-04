@@ -30,6 +30,9 @@ public class ReportDAO {
     	dataSource = testDataSource;
 	}
 
+    protected ReportDAO(boolean testMode) {
+    	
+    }
 
     public void save(ReportBean report) {
         String query = "INSERT INTO Report (email, email_Recensore, ID_Film) VALUES (?, ?, ?)";

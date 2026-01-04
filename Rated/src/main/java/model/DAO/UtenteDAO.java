@@ -30,6 +30,10 @@ public class UtenteDAO {
     public UtenteDAO(DataSource dataSource) {
         this.dataSource = dataSource;
     }
+    
+    protected UtenteDAO(boolean testMode) {
+        // Vuoto: non fa nulla, niente DB!
+    }
 
     // Metodo setter per cambiare il DataSource
     public void setDataSource(DataSource dataSource) {

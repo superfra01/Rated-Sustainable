@@ -29,6 +29,10 @@ public class RecensioneDAO {
     public RecensioneDAO(DataSource testDataSource) {
 		dataSource= testDataSource;
 	}
+    
+    protected RecensioneDAO(boolean testMode) {
+        // Non fare nulla qui! Niente connessione al DB.
+    }
 
 	public void save(RecensioneBean recensione) {
         String query = "INSERT INTO Recensione (titolo, contenuto, valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

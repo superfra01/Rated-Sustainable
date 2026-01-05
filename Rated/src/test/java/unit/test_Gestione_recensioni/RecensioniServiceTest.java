@@ -1,11 +1,9 @@
 package unit.test_Gestione_recensioni;
 
-
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import model.DAO.FilmDAO;
@@ -36,6 +34,7 @@ class RecensioniServiceTest {
         mockReportDAO = mock(ReportDAO.class);
         mockFilmDAO = mock(FilmDAO.class);
 
+        // Inietta tutti i DAO mockati tramite il costruttore
         recensioniService = new RecensioniService(mockRecensioneDAO, mockValutazioneDAO, mockReportDAO, mockFilmDAO);
     }
 
@@ -129,19 +128,17 @@ class RecensioniServiceTest {
 
     @Test
     void testReport() {
-        String email = "user@example.com";         // The user reporting the review
+        String email = "user@example.com";        // The user reporting the review
         String emailRecensore = "reviewer@example.com"; // The author of the review
         int idFilm = 1;
 
-        // 1. Mock that the user hasn't reported this review yet (Existing code)
+        // 1. Mock that the user hasn't reported this review yet
         when(mockReportDAO.findById(email, emailRecensore, idFilm)).thenReturn(null);
 
         // 2. FIX: Mock the existence of the review being reported
-        // The service needs to fetch the review to increment the report count
         RecensioneBean recensioneTarget = new RecensioneBean();
         recensioneTarget.setNReports(0); 
         
-        // Assuming the Service looks up the review by the author's email and film ID
         when(mockRecensioneDAO.findById(emailRecensore, idFilm)).thenReturn(recensioneTarget);
 
         // Action
@@ -150,7 +147,7 @@ class RecensioniServiceTest {
         // Verify
         verify(mockReportDAO).save(any(ReportBean.class));
         
-        // Optional: Verify that the review's report count was actually updated in the DB
+        // Verify that the review's report count was actually updated
         verify(mockRecensioneDAO).update(recensioneTarget); 
     }
 }

@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +12,6 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import model.DAO.UtenteDAO;
 import model.Entity.RecensioneBean;
@@ -23,7 +19,6 @@ import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
 
 import utilities.PasswordUtility;
-
 
 class ProfileServiceTest {
 
@@ -45,9 +40,10 @@ class ProfileServiceTest {
         mockUtenteDAO = mock(UtenteDAO.class);
 
         // ProfileService utilizza un DAO mockato
-        profileService = new ProfileService(mockDataSource);
-        profileService.UtenteDAO = mockUtenteDAO;
+        // CORREZIONE: Inietto il mock tramite il costruttore corretto, non tramite assegnazione diretta del campo final
+        profileService = new ProfileService(mockUtenteDAO); 
     }
+
     @Test
     void testProfileUpdate_Success() {
         String email = "test@example.com";
@@ -59,10 +55,10 @@ class ProfileServiceTest {
         // Simula un utente esistente
         UtenteBean existingUser = new UtenteBean();
         existingUser.setEmail(email);
-        // È importante settare una password vecchia, per essere sicuri che sia cambiata
         existingUser.setPassword("oldPassword"); 
 
         when(mockUtenteDAO.findByEmail(email)).thenReturn(existingUser);
+        // Importante: simulo che il *nuovo* username non esista già per un altro utente, altrimenti fallisce il controllo nel service
         when(mockUtenteDAO.findByUsername(username)).thenReturn(null);
 
         // Esegui il metodo
@@ -72,7 +68,7 @@ class ProfileServiceTest {
         assertNotNull(updatedUser);
         assertEquals(username, updatedUser.getUsername());
         
-        // --- MODIFICA QUI: Calcoliamo l'hash atteso usando la stessa utility del Service ---
+        // Verifica hash password
         String expectedHash = PasswordUtility.hashPassword(password);
         assertEquals(expectedHash, updatedUser.getPassword()); 
         
@@ -87,8 +83,13 @@ class ProfileServiceTest {
         String email = "test@example.com";
         String username = "existingUsername";
 
-        // Simula un username già esistente
-        when(mockUtenteDAO.findByUsername(username)).thenReturn(new UtenteBean());
+        // Simulo che findByUsername trovi un utente diverso da quello che sta facendo l'update
+        // Nota: Nel tuo service c'è un controllo: if(u != null && !(u.getEmail().equals(email))) return null;
+        UtenteBean anotherUser = new UtenteBean();
+        anotherUser.setUsername(username);
+        anotherUser.setEmail("another@example.com"); // Email DIVERSA
+
+        when(mockUtenteDAO.findByUsername(username)).thenReturn(anotherUser);
 
         // Esegui il metodo
         UtenteBean result = profileService.ProfileUpdate(username, email, "password", "bio", new byte[]{1});
@@ -96,6 +97,7 @@ class ProfileServiceTest {
         // Verifica
         assertNull(result);
     }
+
     @Test
     void testPasswordUpdate_Success() {
         String email = "test@example.com";
@@ -114,7 +116,6 @@ class ProfileServiceTest {
         // Verifica
         assertNotNull(updatedUser);
         
-        // --- MODIFICA QUI: Anche qui confrontiamo l'hash ---
         String expectedHash = PasswordUtility.hashPassword(newPassword);
         assertEquals(expectedHash, updatedUser.getPassword());
 

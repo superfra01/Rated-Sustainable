@@ -25,7 +25,8 @@ class CatalogoServiceTest {
         // Mock di FilmDAO
         mockFilmDAO = mock(FilmDAO.class);
 
-        // Inizializza il servizio con il DAO mockato
+        // Inizializza il servizio con il DAO mockato tramite il costruttore
+        // Questo evita l'errore di assegnazione a una variabile final
         catalogoService = new CatalogoService(mockFilmDAO);
     }
 
@@ -141,6 +142,7 @@ class CatalogoServiceTest {
         // Verifica
         verify(mockFilmDAO).delete(idFilm);
     }
+    
     @Test
     void testGetFilmsFromRecensioni() {
         // Crea una lista di recensioni
@@ -160,5 +162,4 @@ class CatalogoServiceTest {
         assertEquals(1, result.size());
         assertSame(film, result.get(1));
     }
-
 }

@@ -1,23 +1,11 @@
 package unit.test_Gestione_utenti;
+
 import static org.junit.jupiter.api.Assertions.*;
-
-
 import static org.mockito.Mockito.*;
 
 import model.DAO.UtenteDAO;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Utenti.service.ModerationService;
-
-import javax.sql.DataSource;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-
-import static org.mockito.Mockito.*;
-
-import model.DAO.UtenteDAO;
-import model.Entity.UtenteBean;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +20,8 @@ class ModerationServiceTest {
         // Mock del DAO
         mockUtenteDAO = mock(UtenteDAO.class);
 
-        // Inietta il mock nel service
+        // Inietta il mock nel service tramite il costruttore
+        // Questo risolve l'errore di assegnazione a variabile final
         moderationService = new ModerationService(mockUtenteDAO);
     }
 

@@ -27,7 +27,7 @@ class AutenticationServiceTest {
         // Mock di HttpSession
         mockSession = mock(HttpSession.class);
 
-        // Inizializza il servizio con il DAO mockato
+        // Inizializza il servizio iniettando il DAO mockato tramite il costruttore
         autenticationService = new AutenticationService(mockUtenteDAO);
     }
 
@@ -57,7 +57,7 @@ class AutenticationServiceTest {
         String email = "test@example.com";
         String password = "wrongPassword";
 
-        // Simula un utente esistente
+        // Simula un utente esistente con password corretta diversa da quella inserita
         UtenteBean user = new UtenteBean();
         user.setEmail(email);
         user.setPassword(PasswordUtility.hashPassword("password123"));
@@ -76,6 +76,7 @@ class AutenticationServiceTest {
         String email = "nonexistent@example.com";
         String password = "password123";
 
+        // Simula che l'utente non esista
         when(mockUtenteDAO.findByEmail(email)).thenReturn(null);
 
         // Esegui il metodo

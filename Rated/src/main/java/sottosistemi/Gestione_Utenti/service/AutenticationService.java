@@ -1,60 +1,157 @@
-package sottosistemi.Gestione_Utenti.service;
+package unit.test_Gestione_utenti;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import model.DAO.UtenteDAO;
 import model.Entity.UtenteBean;
+import sottosistemi.Gestione_Utenti.service.AutenticationService;
 import utilities.PasswordUtility;
-
-import java.sql.SQLException;
 
 import javax.servlet.http.HttpSession;
 
-public class AutenticationService {
-    private final UtenteDAO UtenteDAO; // Reso final
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-    public AutenticationService() {
-        this.UtenteDAO = new UtenteDAO();
+class AutenticationServiceTest {
+
+    private AutenticationService autenticationService;
+    private UtenteDAO mockUtenteDAO;
+    private HttpSession mockSession;
+
+    @BeforeEach
+    void setUp() {
+        // Mock di UtenteDAO
+        mockUtenteDAO = mock(UtenteDAO.class);
+
+        // Mock di HttpSession
+        mockSession = mock(HttpSession.class);
+
+        // Inizializza il servizio iniettando il DAO mockato tramite il costruttore
+        autenticationService = new AutenticationService(mockUtenteDAO);
     }
 
-    public AutenticationService(final UtenteDAO utenteDAO) { // Parametro final
-        this.UtenteDAO = utenteDAO;
+    @Test
+    void testLogin_Success() {
+        final String email = "test@example.com";
+        final String password = "password123";
+        final String hashedPassword = PasswordUtility.hashPassword(password);
+
+        // Simula un utente esistente
+        final UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setPassword(hashedPassword);
+
+        when(mockUtenteDAO.findByEmail(email)).thenReturn(user);
+
+        // Esegui il metodo
+        final UtenteBean result = autenticationService.login(email, password);
+
+        // Verifica
+        assertNotNull(result);
+        assertEquals(email, result.getEmail());
     }
 
-    public UtenteBean login(final String email, final String password) { // Parametri final
-        final UtenteBean user = UtenteDAO.findByEmail(email); // Variabile locale final
-        if (user != null && PasswordUtility.hashPassword(password).equals(user.getPassword())) {
-            return user; // Authentication successful
-        }
-        
-        return null; // Authentication failed
+    @Test
+    void testLogin_Failure_InvalidPassword() {
+        final String email = "test@example.com";
+        final String password = "wrongPassword";
+
+        // Simula un utente esistente con password corretta diversa da quella inserita
+        final UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setPassword(PasswordUtility.hashPassword("password123"));
+
+        when(mockUtenteDAO.findByEmail(email)).thenReturn(user);
+
+        // Esegui il metodo
+        final UtenteBean result = autenticationService.login(email, password);
+
+        // Verifica
+        assertNull(result);
     }
 
-    public void logout(final HttpSession session) { // Parametro final
-        session.invalidate();
+    @Test
+    void testLogin_Failure_UserNotFound() {
+        final String email = "nonexistent@example.com";
+        final String password = "password123";
+
+        // Simula che l'utente non esista
+        when(mockUtenteDAO.findByEmail(email)).thenReturn(null);
+
+        // Esegui il metodo
+        final UtenteBean result = autenticationService.login(email, password);
+
+        // Verifica
+        assertNull(result);
     }
-    
-    public UtenteBean register(final String username, final String email, final String password, final String biografia, final byte[] icon) { // Parametri final
-        
-        // Check if the user already exists
-        if (UtenteDAO.findByEmail(email) != null) {
-            return null; // User already exists
-        }
-        
-        // Check if the user already exists
-        if (UtenteDAO.findByUsername(username) != null) {
-            return null; // User already exists
-        }
-        
-        final UtenteBean User = new UtenteBean(); // Variabile locale final
-        User.setUsername(username);
-        User.setEmail(email);
-        User.setPassword(PasswordUtility.hashPassword(password));
-        User.setTipoUtente("RECENSORE");
-        User.setIcona(icon);
-        User.setNWarning(0);
-        User.setBiografia(biografia);
-        
-        UtenteDAO.save(User);
-        
-        return User;
+
+    @Test
+    void testLogout() {
+        // Esegui il metodo
+        autenticationService.logout(mockSession);
+
+        // Verifica che la sessione sia invalidata
+        verify(mockSession).invalidate();
+    }
+
+    @Test
+    void testRegister_Success() {
+        final String username = "newUser";
+        final String email = "newuser@example.com";
+        final String password = "password123";
+        final String biografia = "This is a biography.";
+        final byte[] icon = new byte[]{1, 2, 3};
+
+        when(mockUtenteDAO.findByEmail(email)).thenReturn(null);
+        when(mockUtenteDAO.findByUsername(username)).thenReturn(null);
+
+        // Esegui il metodo
+        final UtenteBean result = autenticationService.register(username, email, password, biografia, icon);
+
+        // Verifica
+        assertNotNull(result);
+        assertEquals(username, result.getUsername());
+        assertEquals(email, result.getEmail());
+        assertEquals(PasswordUtility.hashPassword(password), result.getPassword());
+        assertEquals(biografia, result.getBiografia());
+        assertArrayEquals(icon, result.getIcona());
+
+        // Verifica che il metodo save sia stato chiamato
+        verify(mockUtenteDAO).save(result);
+    }
+
+    @Test
+    void testRegister_Failure_EmailExists() {
+        final String username = "newUser";
+        final String email = "existinguser@example.com";
+        final String password = "password123";
+        final String biografia = "This is a biography.";
+        final byte[] icon = new byte[]{1, 2, 3};
+
+        when(mockUtenteDAO.findByEmail(email)).thenReturn(new UtenteBean());
+
+        // Esegui il metodo
+        final UtenteBean result = autenticationService.register(username, email, password, biografia, icon);
+
+        // Verifica
+        assertNull(result);
+    }
+
+    @Test
+    void testRegister_Failure_UsernameExists() {
+        final String username = "existingUser";
+        final String email = "newuser@example.com";
+        final String password = "password123";
+        final String biografia = "This is a biography.";
+        final byte[] icon = new byte[]{1, 2, 3};
+
+        when(mockUtenteDAO.findByUsername(username)).thenReturn(new UtenteBean());
+
+        // Esegui il metodo
+        final UtenteBean result = autenticationService.register(username, email, password, biografia, icon);
+
+        // Verifica
+        assertNull(result);
     }
 }

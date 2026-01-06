@@ -1,25 +1,61 @@
-package sottosistemi.Gestione_Utenti.service;
+package unit.test_Gestione_utenti;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import model.DAO.UtenteDAO;
 import model.Entity.UtenteBean;
+import sottosistemi.Gestione_Utenti.service.ModerationService;
 
-public class ModerationService {
-    public final UtenteDAO UtenteDAO; // Reso final
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-    public ModerationService() {
-        this.UtenteDAO = new UtenteDAO();
+class ModerationServiceTest {
+
+    private ModerationService moderationService;
+    private UtenteDAO mockUtenteDAO;
+
+    @BeforeEach
+    void setUp() {
+        // Mock del DAO
+        mockUtenteDAO = mock(UtenteDAO.class);
+
+        // Inietta il mock nel service tramite il costruttore
+        moderationService = new ModerationService(mockUtenteDAO);
     }
-    
-    // Costruttore per il test
-    public ModerationService(final UtenteDAO utenteDAO) { // Parametro final
-        this.UtenteDAO = utenteDAO;
+
+    @Test
+    void testWarn_UserExists() {
+        final String email = "test@example.com";
+
+        // Simula un utente esistente con un avvertimento iniziale
+        final UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setNWarning(1);
+
+        when(mockUtenteDAO.findByEmail(email)).thenReturn(user);
+
+        // Esegui il metodo
+        moderationService.warn(email);
+
+        // Verifica che il numero di avvertimenti sia incrementato
+        assertEquals(2, user.getNWarning());
+
+        // Verifica che il metodo update sia stato chiamato
+        verify(mockUtenteDAO).update(user);
     }
-    
-    public void warn(final String email) { // Parametro final
-    	final UtenteBean user = UtenteDAO.findByEmail(email); // Variabile locale final
-    	if(user != null) {
-    		user.setNWarning(user.getNWarning() + 1);
-        	UtenteDAO.update(user);
-    	}
+
+    @Test
+    void testWarn_UserNotFound() {
+        final String email = "nonexistent@example.com";
+
+        // Simula che l'utente non esista
+        when(mockUtenteDAO.findByEmail(email)).thenReturn(null);
+
+        // Esegui il metodo
+        moderationService.warn(email);
+
+        // Verifica che il metodo update non sia stato chiamato
+        verify(mockUtenteDAO, never()).update(any());
     }
 }

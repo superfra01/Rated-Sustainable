@@ -7,15 +7,13 @@ import utilities.PasswordUtility;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Thread)
-@BenchmarkMode(Mode.AverageTime) // Misuriamo il tempo medio di esecuzione
-@OutputTimeUnit(TimeUnit.MICROSECONDS) // Output in microsecondi
+@BenchmarkMode(Mode.AverageTime) 
+@OutputTimeUnit(TimeUnit.MICROSECONDS) 
 @Fork(1)
 @Warmup(iterations = 3, time = 1)
 @Measurement(iterations = 5, time = 1)
 public class PasswordUtilityBenchmark {
 
-    // @Param permette di eseguire lo stesso benchmark con valori diversi.
-    // JMH eseguirà tutti i test prima con "123456" e poi con la frase lunga.
     @Param({
         "123456", 
         "UnaPasswordMoltoLungaPerVedereSeCambiaQualcosaNelTempoDiHashing"
@@ -24,10 +22,8 @@ public class PasswordUtilityBenchmark {
 
     @Benchmark
     public void testHashPassword(Blackhole bh) {
-        // Chiamiamo il metodo statico
-        String result = PasswordUtility.hashPassword(passwordToTest);
+        final String result = PasswordUtility.hashPassword(passwordToTest);
         
-        // Consumiamo il risultato per evitare ottimizzazioni del compilatore
         bh.consume(result);
     }
 }

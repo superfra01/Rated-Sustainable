@@ -38,10 +38,9 @@ public class RecensioniServiceBenchmark {
     public void setup() {
     	
         // --- 1. PREPARIAMO I DATI FINTI ---
-        // Simuliamo una lista di 1000 recensioni per testare i cicli
         listaRecensioniMock = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
-            RecensioneBean r = new RecensioneBean();
+            final RecensioneBean r = new RecensioneBean();
             r.setIdFilm(idFilmTest);
             r.setValutazione((i % 5) + 1); // Voti da 1 a 5 a rotazione
             // Simuliamo che 1 recensione su 10 sia segnalata
@@ -50,9 +49,7 @@ public class RecensioniServiceBenchmark {
         }
 
         // --- 2. MOCK DI RECENSIONE DAO ---
-     // Nel metodo setup() del Benchmark:
-
-        RecensioneDAO mockRecensioneDAO = new RecensioneDAO(true) { // <--- Passa true qui!
+        final RecensioneDAO mockRecensioneDAO = new RecensioneDAO(true) { 
             @Override
             public RecensioneBean findById(String email, int idFilm) {
                 return null;
@@ -73,23 +70,23 @@ public class RecensioniServiceBenchmark {
         };
 
         // --- 3. MOCK DI FILM DAO ---
-        FilmDAO mockFilmDAO = new FilmDAO(true) {
+        final FilmDAO mockFilmDAO = new FilmDAO(true) {
             @Override
             public FilmBean findById(int idFilm) {
-                FilmBean f = new FilmBean();
+                final FilmBean f = new FilmBean();
                 f.setIdFilm(idFilm);
                 return f;
             }
             @Override public void update(FilmBean f) {} // Non fa nulla
         };
 
-        // --- 4. MOCK DI ALTRI DAO (Meno rilevanti per questi test specifici ma necessari) ---
-        ValutazioneDAO mockValutazioneDAO = new ValutazioneDAO(true) {
+        // --- 4. MOCK DI ALTRI DAO ---
+        final ValutazioneDAO mockValutazioneDAO = new ValutazioneDAO(true) {
             @Override public ValutazioneBean findById(String email, String emailRecensore, int idFilm) { return null; }
             @Override public void save(ValutazioneBean v) {}
         };
 
-        ReportDAO mockReportDAO = new ReportDAO(true) {
+        final ReportDAO mockReportDAO = new ReportDAO(true) {
              // Metodi vuoti se necessario
         };
 
@@ -98,31 +95,20 @@ public class RecensioniServiceBenchmark {
     }
 
     // --- BENCHMARK 1: Logica di Filtraggio ---
-    // Misura quanto tempo ci mette a scorrere 1000 recensioni e trovare quelle segnalate.
-    // Testa il metodo: GetAllRecensioniSegnalate()
     @Benchmark
     public void testFiltroSegnalazioni(Blackhole bh) {
-        List<RecensioneBean> result = service.GetAllRecensioniSegnalate();
+        final List<RecensioneBean> result = service.GetAllRecensioniSegnalate();
         bh.consume(result);
     }
 
     // --- BENCHMARK 2: Logica Matematica (Media) ---
-    // Misura quanto tempo ci mette a ricalcolare la media voti su 1000 recensioni.
-    // Viene chiamato indirettamente da addRecensione.
     @Benchmark
     public void testCalcoloMediaVoti(Blackhole bh) {
-        // Chiamiamo addRecensione. Grazie ai Mock:
-        // 1. Il save() non scrive su DB (veloce)
-        // 2. findByIdFilm() ritorna 1000 elementi
-        // 3. Il codice esegue il ciclo for per calcolare la media (questo è ciò che misuriamo)
         service.addRecensione(emailTest, idFilmTest, "Bella trama", "Titolo", 5);
-        
-        // Nota: non c'è return, quindi non serve bh.consume() esplicito, 
-        // ma JMH misura l'esecuzione del metodo void.
     }
 
     public static void main(String[] args) throws Exception {
-        Options opt = new OptionsBuilder()
+        final Options opt = new OptionsBuilder()
                 .include(RecensioniServiceBenchmark.class.getSimpleName())
                 .build();
         new Runner(opt).run();

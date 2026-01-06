@@ -9,7 +9,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import utilities.PasswordUtility; // Assicurati che questa classe sia visibile
+import utilities.PasswordUtility; 
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MICROSECONDS) // Usiamo microsecondi, ma per l'hashing potremmo vedere millisecondi
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Fork(1)
 @Warmup(iterations = 3, time = 1)
 @Measurement(iterations = 5, time = 1)
@@ -39,14 +39,12 @@ public class AutenticationServiceBenchmark {
     @Setup(Level.Trial)
     public void setup() {
         // --- 1. MOCK UTENTE DAO ---
-        // ERRORE ERA QUI: mancava (true)
-        UtenteDAO mockDao = new UtenteDAO(true) { 
+        final UtenteDAO mockDao = new UtenteDAO(true) { 
             @Override
             public UtenteBean findByEmail(String email) {
-                if ("user@test.com".equals(email)) { // Usa le tue costanti
-                    UtenteBean u = new UtenteBean();
+                if ("user@test.com".equals(email)) { 
+                    final UtenteBean u = new UtenteBean();
                     u.setEmail(email);
-                    // Importante: la password deve matchare l'hash nel test
                     u.setPassword(PasswordUtility.hashPassword("PasswordSegreta123!")); 
                     return u;
                 }
@@ -71,10 +69,8 @@ public class AutenticationServiceBenchmark {
         this.mockSession = new javax.servlet.http.HttpSession() {
             @Override
             public void invalidate() {
-                // Non fa nulla, serve solo per il test di logout
             }
 
-            // --- Metodi obbligatori dell'interfaccia HttpSession ---
             @Override public long getCreationTime() { return 0; }
             @Override public String getId() { return "mockId"; }
             @Override public long getLastAccessedTime() { return 0; }
@@ -91,7 +87,6 @@ public class AutenticationServiceBenchmark {
             @Override public void removeAttribute(String name) {}
             @Override public void removeValue(String name) {}
             
-            // ECCO IL METODO CHE MANCAVA E DAVA ERRORE:
             @Override 
             public boolean isNew() { 
                 return false; 
@@ -102,50 +97,37 @@ public class AutenticationServiceBenchmark {
         this.service = new AutenticationService(mockDao);
     }
 
-    // --- BENCHMARK 1: Login Corretto ---
-    // Questo è il test più pesante. Misura quanto ci mette PasswordUtility a fare l'hash
-    // e confrontarlo.
     @Benchmark
     public void testLoginSuccess(Blackhole bh) {
-        UtenteBean u = service.login(VALID_EMAIL, VALID_PASSWORD);
+        final UtenteBean u = service.login(VALID_EMAIL, VALID_PASSWORD);
         bh.consume(u);
     }
 
-    // --- BENCHMARK 2: Login Fallito (Password errata) ---
-    // Anche qui viene calcolato l'hash della password (sbagliata) per il confronto.
-    // Dovrebbe impiegare lo stesso tempo del login corretto.
     @Benchmark
     public void testLoginWrongPassword(Blackhole bh) {
-        UtenteBean u = service.login(VALID_EMAIL, WRONG_PASSWORD);
+        final UtenteBean u = service.login(VALID_EMAIL, WRONG_PASSWORD);
         bh.consume(u);
     }
     
-    // --- BENCHMARK 3: Login Fallito (Utente non esiste) ---
-    // Qui NON viene fatto l'hash (c'è un return null subito dopo findByEmail).
-    // Questo benchmark sarà MOLTO più veloce degli altri due.
     @Benchmark
     public void testLoginUserNotFound(Blackhole bh) {
-        UtenteBean u = service.login("non@esiste.com", "qualcosa");
+        final UtenteBean u = service.login("non@esiste.com", "qualcosa");
         bh.consume(u);
     }
 
-    // --- BENCHMARK 4: Registrazione ---
-    // Include: 2 controlli (mock) + 1 hashing password + creazione oggetto
     @Benchmark
     public void testRegister(Blackhole bh) {
-        UtenteBean u = service.register(NEW_USER_NAME, NEW_USER_EMAIL, VALID_PASSWORD, "Bio", null);
+        final UtenteBean u = service.register(NEW_USER_NAME, NEW_USER_EMAIL, VALID_PASSWORD, "Bio", null);
         bh.consume(u);
     }
 
-    // --- BENCHMARK 5: Logout ---
-    // Verifica l'overhead dell'invalidazione sessione (qui è mock, quindi quasi zero)
     @Benchmark
     public void testLogout() {
         service.logout(mockSession);
     }
 
     public static void main(String[] args) throws Exception {
-        Options opt = new OptionsBuilder()
+        final Options opt = new OptionsBuilder()
                 .include(AutenticationServiceBenchmark.class.getSimpleName())
                 .build();
         new Runner(opt).run();

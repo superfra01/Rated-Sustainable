@@ -27,19 +27,17 @@ public class CatalogoServiceBenchmark {
     private List<RecensioneBean> listaRecensioniTest;
     private String nomeDaCercare;
 
-    // Eseguiamo questo setup una sola volta prima del benchmark
     @Setup(Level.Trial)
     public void setup() {
         // 1. CREIAMO IL MOCK DI FILM DAO
-        // Passiamo 'true' per usare il costruttore vuoto ed evitare la connessione al DB
-        FilmDAO mockDao = new FilmDAO(true) {
+        final FilmDAO mockDao = new FilmDAO(true) {
             
             @Override
             public List<FilmBean> findAll() {
                 // Simuliamo una lista di 100 film
-                List<FilmBean> list = new ArrayList<>();
+                final List<FilmBean> list = new ArrayList<>();
                 for (int i = 0; i < 100; i++) {
-                    FilmBean f = new FilmBean();
+                    final FilmBean f = new FilmBean();
                     f.setIdFilm(i);
                     f.setNome("Film " + i);
                     list.add(f);
@@ -50,7 +48,7 @@ public class CatalogoServiceBenchmark {
             @Override
             public FilmBean findById(int id) {
                 // Ritorniamo un film finto immediato
-                FilmBean f = new FilmBean();
+                final FilmBean f = new FilmBean();
                 f.setIdFilm(id);
                 f.setNome("Film Trovato " + id);
                 return f;
@@ -59,8 +57,8 @@ public class CatalogoServiceBenchmark {
             @Override
             public List<FilmBean> findByName(String name) {
                 // Simuliamo il risultato di una ricerca
-                List<FilmBean> list = new ArrayList<>();
-                FilmBean f = new FilmBean();
+                final List<FilmBean> list = new ArrayList<>();
+                final FilmBean f = new FilmBean();
                 f.setNome(name);
                 list.add(f);
                 return list;
@@ -73,47 +71,39 @@ public class CatalogoServiceBenchmark {
         };
 
         // 2. INIEZIONE DEL MOCK NEL SERVICE
-        // Usiamo il costruttore di CatalogoService che accetta il DAO
         this.service = new CatalogoService(mockDao);
 
         // 3. PREPARAZIONE DATI PER I TEST
-        // Prepariamo la lista di recensioni per testare il metodo getFilms(List<RecensioneBean>)
         this.listaRecensioniTest = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
-            RecensioneBean r = new RecensioneBean();
-            r.setIdFilm(i); // Colleghiamo agli ID generati nel mock
+            final RecensioneBean r = new RecensioneBean();
+            r.setIdFilm(i); 
             listaRecensioniTest.add(r);
         }
 
         this.nomeDaCercare = "Matrix";
     }
 
-    // --- BENCHMARK 1: Testiamo il recupero di tutti i film ---
     @Benchmark
     public void testGetFilms(Blackhole bh) {
-        List<FilmBean> result = service.getFilms();
+        final List<FilmBean> result = service.getFilms();
         bh.consume(result);
     }
 
-    // --- BENCHMARK 2: Testiamo la logica di mapping delle recensioni ---
-    // Questo è il test più interessante perché contiene logica Java (il ciclo for e l'HashMap)
     @Benchmark
     public void testGetFilmsByRecensioni(Blackhole bh) {
-        // Chiama il metodo che trasforma List<Recensione> in HashMap<Integer, Film>
-        var result = service.getFilms(listaRecensioniTest);
+        final var result = service.getFilms(listaRecensioniTest);
         bh.consume(result);
     }
 
-    // --- BENCHMARK 3: Testiamo la ricerca ---
     @Benchmark
     public void testRicercaFilm(Blackhole bh) {
-        List<FilmBean> result = service.ricercaFilm(nomeDaCercare);
+        final List<FilmBean> result = service.ricercaFilm(nomeDaCercare);
         bh.consume(result);
     }
 
-    // Main per avviare il test
     public static void main(String[] args) throws Exception {
-        Options opt = new OptionsBuilder()
+        final Options opt = new OptionsBuilder()
                 .include(CatalogoServiceBenchmark.class.getSimpleName())
                 .build();
         new Runner(opt).run();

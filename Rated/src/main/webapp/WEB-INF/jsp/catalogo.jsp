@@ -73,12 +73,12 @@
         %>
             <div class="film-card" onclick="window.location.href='<%= dettaglioUrl %>'">
                 <div class="film-poster">
-                    <img src="<%= film.getLocandina() != null
-                                    ? "data:image/jpeg;base64,"
-                                      + Base64.getEncoder().encodeToString(film.getLocandina())
-                                    : request.getContextPath() + "/images/RATED_icon.png"
-                              %>"
-                         alt="Locandina" />
+					<img src="<%= film.getLocandina() != null
+									? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(film.getLocandina())
+									: request.getContextPath() + "/static/images/RATED_icon.png" 
+							  %>"
+						alt="Locandina" />
+                    
                 </div>
                 <div class="film-info">
                     <h3><%= film.getNome() %></h3>

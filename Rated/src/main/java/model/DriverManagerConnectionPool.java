@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DriverManagerConnectionPool {
 	// Reso final perché inizializzato inline e mai riassegnato (solo modificato il contenuto)
-	private static final List<Connection> freeDbConnections = new LinkedList<Connection>();
+	private static List<Connection> freeDbConnections = new LinkedList<Connection>();
 	
 	static {
 		try {

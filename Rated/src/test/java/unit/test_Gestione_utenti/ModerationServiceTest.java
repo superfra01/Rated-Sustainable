@@ -21,16 +21,15 @@ class ModerationServiceTest {
         mockUtenteDAO = mock(UtenteDAO.class);
 
         // Inietta il mock nel service tramite il costruttore
-        // Questo risolve l'errore di assegnazione a variabile final
         moderationService = new ModerationService(mockUtenteDAO);
     }
 
     @Test
     void testWarn_UserExists() {
-        String email = "test@example.com";
+        final String email = "test@example.com";
 
         // Simula un utente esistente con un avvertimento iniziale
-        UtenteBean user = new UtenteBean();
+        final UtenteBean user = new UtenteBean();
         user.setEmail(email);
         user.setNWarning(1);
 
@@ -48,7 +47,7 @@ class ModerationServiceTest {
 
     @Test
     void testWarn_UserNotFound() {
-        String email = "nonexistent@example.com";
+        final String email = "nonexistent@example.com";
 
         // Simula che l'utente non esista
         when(mockUtenteDAO.findByEmail(email)).thenReturn(null);

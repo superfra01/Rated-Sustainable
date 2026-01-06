@@ -1,0 +1,71 @@
+# JMH version: 1.37
+# VM version: JDK 17.0.12, Java HotSpot(TM) 64-Bit Server VM, 17.0.12+8-LTS-286
+# VM invoker: C:\Program Files\Java\jdk-17\bin\java.exe
+# VM options: -ea -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 2 iterations, 1 s each
+# Measurement: 3 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: benchmark.ModerationServiceBenchmark.testWarnUserExists
+
+# Run progress: 0,00% complete, ETA 00:00:10
+# Fork: 1 of 1
+# Warmup Iteration   1: 1,856 ns/op
+# Warmup Iteration   2: 1,693 ns/op
+Iteration   1: 1,715 ns/op
+Iteration   2: 1,656 ns/op
+Iteration   3: 1,663 ns/op
+
+
+Result "benchmark.ModerationServiceBenchmark.testWarnUserExists":
+  1,678 ±(99.9%) 0,587 ns/op [Average]
+  (min, avg, max) = (1,656, 1,678, 1,715), stdev = 0,032
+  CI (99.9%): [1,091, 2,265] (assumes normal distribution)
+
+
+# JMH version: 1.37
+# VM version: JDK 17.0.12, Java HotSpot(TM) 64-Bit Server VM, 17.0.12+8-LTS-286
+# VM invoker: C:\Program Files\Java\jdk-17\bin\java.exe
+# VM options: -ea -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 2 iterations, 1 s each
+# Measurement: 3 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: benchmark.ModerationServiceBenchmark.testWarnUserNotFound
+
+# Run progress: 50,00% complete, ETA 00:00:05
+# Fork: 1 of 1
+# Warmup Iteration   1: 1,677 ns/op
+# Warmup Iteration   2: 1,651 ns/op
+Iteration   1: 1,639 ns/op
+Iteration   2: 1,638 ns/op
+Iteration   3: 1,642 ns/op
+
+
+Result "benchmark.ModerationServiceBenchmark.testWarnUserNotFound":
+  1,640 ±(99.9%) 0,036 ns/op [Average]
+  (min, avg, max) = (1,638, 1,640, 1,642), stdev = 0,002
+  CI (99.9%): [1,603, 1,676] (assumes normal distribution)
+
+
+# Run complete. Total time: 00:00:11
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                        Mode  Cnt  Score   Error  Units
+ModerationServiceBenchmark.testWarnUserExists    avgt    3  1,678 ± 0,587  ns/op
+ModerationServiceBenchmark.testWarnUserNotFound  avgt    3  1,640 ± 0,036  ns/op

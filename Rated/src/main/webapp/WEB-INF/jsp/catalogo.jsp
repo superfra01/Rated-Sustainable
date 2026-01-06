@@ -24,16 +24,18 @@
     }
 %>
 
-<jsp:include page="header.jsp" />
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
     <title>Catalogo</title>
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/Catalogo.css" />
     <script src="static/scripts/catalogoFunctions.js" defer></script>
 </head>
+
+<jsp:include page="header.jsp" />
+
 <body>
 
 <div class="catalog-container">

@@ -11,7 +11,7 @@ public class JmhTestRunner {
     public void launchBenchmark() throws Exception {
         final Options opt = new OptionsBuilder()
             // Includi qui le classi di benchmark che vuoi eseguire
-            .include(RecensioniServiceBenchmark.class.getSimpleName()) 
+            .include(FieldValidatorBenchmark.class.getSimpleName()) 
             // .include(AltroServiceBenchmark.class.getSimpleName())
             .forks(1) 
             .warmupIterations(2) 

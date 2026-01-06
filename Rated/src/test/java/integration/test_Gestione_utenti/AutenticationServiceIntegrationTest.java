@@ -9,6 +9,7 @@ import model.DAO.UtenteDAO;
 import model.Entity.UtenteBean;
 import utilities.PasswordUtility;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,9 +45,9 @@ public class AutenticationServiceIntegrationTest {
     }
 
     // Metodo helper per pulire il DB dai dati di test
-    private void cleanDb(final String email) {
-        try (final Connection conn = testDataSource.getConnection();
-             final PreparedStatement ps = conn.prepareStatement("DELETE FROM Utente_Registrato WHERE email = ?")) {
+    private void cleanDb(String email) {
+        try (Connection conn = testDataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM Utente_Registrato WHERE email = ?")) {
             ps.setString(1, email);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -57,7 +58,7 @@ public class AutenticationServiceIntegrationTest {
     @Test
     void testRegister_NewUser_ShouldSucceed() {
         // ESEMPIO “TC07.1”: registrazione con successo
-        final UtenteBean user = authService.register("NuovoUtente", "nuovo.utente@example.com", 
+        UtenteBean user = authService.register("NuovoUtente", "nuovo.utente@example.com", 
                                                "passwordSicura123", "Bio di test", null);
         
         assertNotNull(user, "La registrazione deve restituire un utente non nullo.");
@@ -71,7 +72,7 @@ public class AutenticationServiceIntegrationTest {
     @Test
     void testRegister_ExistingEmail_ShouldFail() {
         // Preparazione: Inserisco manualmente un utente nel DB
-        final UtenteBean existing = new UtenteBean();
+        UtenteBean existing = new UtenteBean();
         existing.setEmail("nuovo.utente@example.com"); // Uso la stessa email del test sopra per comodità
         existing.setUsername("alice.rossi");
         existing.setPassword(PasswordUtility.hashPassword("alice123"));
@@ -79,7 +80,7 @@ public class AutenticationServiceIntegrationTest {
         utenteDAO.save(existing);
 
         // Azione: Provo a registrare un NUOVO utente con la STESSA email
-        final UtenteBean result = authService.register("AltroNome", "nuovo.utente@example.com", 
+        UtenteBean result = authService.register("AltroNome", "nuovo.utente@example.com", 
                                                  "pass123", "Bio", null);
         
         // Verifica
@@ -89,10 +90,10 @@ public class AutenticationServiceIntegrationTest {
     @Test
     void testLogin_CorrectCredentials_ShouldReturnUser() {
         // Preparazione: Creo l'utente
-        final String email = "nuovo.utente@example.com";
-        final String pass = "chiara123";
+        String email = "nuovo.utente@example.com";
+        String pass = "chiara123";
         
-        final UtenteBean user = new UtenteBean();
+        UtenteBean user = new UtenteBean();
         user.setEmail(email);
         user.setUsername("chiara.neri");
         user.setPassword(PasswordUtility.hashPassword(pass)); // Importante: Salvare la password HASHATA
@@ -100,7 +101,7 @@ public class AutenticationServiceIntegrationTest {
         utenteDAO.save(user);
 
         // Azione: Login con password IN CHIARO
-        final UtenteBean loggedUser = authService.login(email, pass);
+        UtenteBean loggedUser = authService.login(email, pass);
         
         // Verifica
         assertNotNull(loggedUser, "Login deve avere successo.");
@@ -110,15 +111,15 @@ public class AutenticationServiceIntegrationTest {
     @Test
     void testLogin_WrongPassword_ShouldReturnNull() {
         // Preparazione
-        final String email = "nuovo.utente@example.com";
-        final UtenteBean user = new UtenteBean();
+        String email = "nuovo.utente@example.com";
+        UtenteBean user = new UtenteBean();
         user.setEmail(email);
         user.setUsername("alice.rossi");
         user.setPassword(PasswordUtility.hashPassword("alice123"));
         utenteDAO.save(user);
 
         // Azione: Password sbagliata
-        final UtenteBean result = authService.login(email, "wrongPass");
+        UtenteBean result = authService.login(email, "wrongPass");
         
         // Verifica
         assertNull(result, "Login deve fallire con password sbagliata.");

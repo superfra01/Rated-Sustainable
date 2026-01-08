@@ -8,7 +8,7 @@
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: benchmark.RecensioniServiceBenchmark.testCalcoloMediaVoti
+# Benchmark: benchmark.RecensioniServiceBenchmark.testAddRecensione
 
 # Run progress: 0,00% complete, ETA 00:00:10
 # Fork: 1 of 1
@@ -19,7 +19,7 @@ Iteration   2: 1,234 us/op
 Iteration   3: 1,233 us/op
 
 
-Result "benchmark.RecensioniServiceBenchmark.testCalcoloMediaVoti":
+Result "benchmark.RecensioniServiceBenchmark.testAddRecensione":
   1,230 ±(99.9%) 0,111 us/op [Average]
   (min, avg, max) = (1,223, 1,230, 1,234), stdev = 0,006
   CI (99.9%): [1,119, 1,341] (assumes normal distribution)
@@ -67,5 +67,5 @@ different JVMs are already problematic, the performance difference caused by dif
 modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
 
 Benchmark                                          Mode  Cnt  Score   Error  Units
-RecensioniServiceBenchmark.testCalcoloMediaVoti    avgt    3  1,230 ± 0,111  us/op
+RecensioniServiceBenchmark.testAddRecensione    avgt    3  1,230 ± 0,111  us/op
 RecensioniServiceBenchmark.testFiltroSegnalazioni  avgt    3  3,574 ± 1,147  us/op

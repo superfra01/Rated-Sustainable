@@ -101,9 +101,9 @@ public class RecensioniServiceBenchmark {
         bh.consume(result);
     }
 
-    // --- BENCHMARK 2: Logica Matematica (Media) ---
+    // --- BENCHMARK 2: Aggiunta Recensione ---
     @Benchmark
-    public void testCalcoloMediaVoti(Blackhole bh) {
+    public void testAddRecensione(Blackhole bh) {
         service.addRecensione(emailTest, idFilmTest, "Bella trama", "Titolo", 5);
     }
 

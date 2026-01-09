@@ -11,11 +11,11 @@ public class JmhTestRunner {
     public void launchBenchmark() throws Exception {
         final Options opt = new OptionsBuilder()
             // Includi qui le classi di benchmark che vuoi eseguire
-            .include(FieldValidatorBenchmark.class.getSimpleName()) 
+            .include(PasswordUtilityBenchmark.class.getSimpleName()) 
             // .include(AltroServiceBenchmark.class.getSimpleName())
-            .forks(1) 
-            .warmupIterations(2) 
-            .measurementIterations(3)
+            .forks(2) 
+            .warmupIterations(15) 
+            .measurementIterations(40)
             .build();
 
         new Runner(opt).run();

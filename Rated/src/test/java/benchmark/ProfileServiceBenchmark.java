@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MICROSECONDS) 
-@Fork(1)
-@Warmup(iterations = 3, time = 1)
-@Measurement(iterations = 5, time = 1)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@Fork(2)
+@Warmup(iterations = 15, time = 1)
+@Measurement(iterations = 40, time = 1)
 public class ProfileServiceBenchmark {
 
     private ProfileService service;

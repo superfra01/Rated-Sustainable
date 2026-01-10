@@ -96,7 +96,7 @@ public class RecensioniServiceBenchmark {
 
     // --- BENCHMARK 1: Logica di Filtraggio ---
     @Benchmark
-    public void testFiltroSegnalazioni(Blackhole bh) {
+    public void testGetAllRecensioniSegnalate(Blackhole bh) {
         final List<RecensioneBean> result = service.GetAllRecensioniSegnalate();
         bh.consume(result);
     }

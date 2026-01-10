@@ -143,7 +143,7 @@ Result "benchmark.RecensioniServiceBenchmark.testAddRecensione":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: benchmark.RecensioniServiceBenchmark.testFiltroSegnalazioni
+# Benchmark: benchmark.RecensioniServiceBenchmark.testGetAllRecensioniSegnalate
 
 # Run progress: 50,00% complete, ETA 00:01:53
 # Fork: 1 of 2
@@ -262,7 +262,7 @@ Iteration  39: 3389,189 ns/op
 Iteration  40: 3420,504 ns/op
 
 
-Result "benchmark.RecensioniServiceBenchmark.testFiltroSegnalazioni":
+Result "benchmark.RecensioniServiceBenchmark.testGetAllRecensioniSegnalate":
   3563,889 ±(99.9%) 94,081 ns/op [Average]
   (min, avg, max) = (3362,186, 3563,889, 4670,414), stdev = 246,194
   CI (99.9%): [3469,808, 3657,970] (assumes normal distribution)
@@ -284,4 +284,4 @@ modes can be very significant. Please make sure you use the consistent Blackhole
 
 Benchmark                                          Mode  Cnt     Score     Error  Units
 RecensioniServiceBenchmark.testAddRecensione       avgt   80  1448,073 ± 129,558  ns/op
-RecensioniServiceBenchmark.testFiltroSegnalazioni  avgt   80  3563,889 ±  94,081  ns/op
+RecensioniServiceBenchmark.testGetAllRecensioniSegnalate  avgt   80  3563,889 ±  94,081  ns/op
